@@ -45,39 +45,109 @@ public class EnemyManager : MonoBehaviour
 
     Vector2 RandomPosition()
     {
-        // Largeur et hauteur de la carte
-        float mapWidth = 41.99548f;
-        float mapHeight = 36.12668f;
+        // Récupérer le GameObject "Map"
+        GameObject map = GameObject.Find("Map");
 
-        // Affichage des dimensions de la carte pour débogage
-        Debug.Log("mapWidth: " + mapWidth + " mapHeight: " + mapHeight);
+        // Vérifier que "Map" existe et a un SpriteRenderer
+        if (map == null)
+        {
+            Debug.LogError("Le GameObject 'Map' est introuvable !");
+            return Vector2.zero;
+        }
 
-        // Récupérer la position de la caméra pour ajuster le centre de la carte
+        SpriteRenderer mapRenderer = map.GetComponent<SpriteRenderer>();
+        if (mapRenderer == null)
+        {
+            Debug.LogError("Le GameObject 'Map' n'a pas de SpriteRenderer !");
+            return Vector2.zero;
+        }
+
+        // Position actuelle de la caméra
         Vector2 cameraPosition = (Vector2)Camera.main.transform.position;
 
-        // Choisir un bord aléatoire (0: Haut, 1: Bas, 2: Gauche, 3: Droit)
-        int edge = Random.Range(0, 4);
+        // Taille visible de la caméra
+        float cameraHalfHeight = Camera.main.orthographicSize;  // Hauteur visible de la caméra
+        float cameraHalfWidth = cameraHalfHeight * Camera.main.aspect;  // Largeur visible de la caméra
+
+        // Calcul des limites visibles de la caméra
+        float cameraLeft = cameraPosition.x - cameraHalfWidth;
+        float cameraRight = cameraPosition.x + cameraHalfWidth;
+        float cameraTop = cameraPosition.y + cameraHalfHeight;
+        float cameraBottom = cameraPosition.y - cameraHalfHeight;
+
+        // Calcul des limites de la carte
+        float mapLeft = mapRenderer.bounds.min.x;
+        float mapRight = mapRenderer.bounds.max.x;
+        float mapTop = mapRenderer.bounds.max.y;
+        float mapBottom = mapRenderer.bounds.min.y;
+
+        // Créer une liste des bords possibles autour de la caméra (0: Haut, 1: Bas, 2: Gauche, 3: Droit)
+        List<int> possibleEdges = new List<int> { 0, 1, 2, 3 };
+
+        // Exclure les bords où la caméra est proche (en tenant compte d'une marge de sécurité)
+        float margin = 1.0f; // Ajuste cette valeur pour modifier la marge de sécurité
+        if (cameraPosition.y + cameraHalfHeight - margin >= cameraTop) possibleEdges.Remove(0); // Trop proche du bord supérieur
+        if (cameraPosition.y - cameraHalfHeight + margin <= cameraBottom) possibleEdges.Remove(1); // Trop proche du bord inférieur
+        if (cameraPosition.x - cameraHalfWidth + margin <= cameraLeft) possibleEdges.Remove(2); // Trop proche du bord gauche
+        if (cameraPosition.x + cameraHalfWidth - margin >= cameraRight) possibleEdges.Remove(3); // Trop proche du bord droit
+
+        // Si tous les bords sont exclus (ce qui est peu probable), autoriser tous les bords
+        if (possibleEdges.Count == 0)
+        {
+            possibleEdges = new List<int> { 0, 1, 2, 3 };
+        }
+
+        // Choisir un bord aléatoire parmi les bords restants
+        int edge = possibleEdges[Random.Range(0, possibleEdges.Count)];
 
         Vector2 spawnPosition = Vector2.zero;
 
+        // Calculer la position de spawn en fonction du bord choisi
         switch (edge)
         {
             case 0: // Bord supérieur
-                    // Générer une position aléatoire entre les limites gauche et droite de la carte, mais fixer la position y au bord supérieur
-                spawnPosition = new Vector2(cameraPosition.x + Random.Range(-mapWidth / 2, mapWidth / 2), cameraPosition.y + mapHeight / 2);
+                spawnPosition = new Vector2(
+                    Random.Range(cameraLeft, cameraRight),  // Entre les limites gauche/droite visibles de la caméra
+                    cameraTop                               // Bord supérieur visible de la caméra
+                );
                 break;
             case 1: // Bord inférieur
-                    // Générer une position aléatoire entre les limites gauche et droite de la carte, mais fixer la position y au bord inférieur
-                spawnPosition = new Vector2(cameraPosition.x + Random.Range(-mapWidth / 2, mapWidth / 2), cameraPosition.y - mapHeight / 2);
+                spawnPosition = new Vector2(
+                    Random.Range(cameraLeft, cameraRight),  // Entre les limites gauche/droite visibles de la caméra
+                    cameraBottom                            // Bord inférieur visible de la caméra
+                );
                 break;
             case 2: // Bord gauche
-                    // Générer une position aléatoire entre les limites du haut et du bas de la carte, mais fixer la position x au bord gauche
-                spawnPosition = new Vector2(cameraPosition.x - mapWidth / 2, cameraPosition.y + Random.Range(-mapHeight / 2, mapHeight / 2));
+                spawnPosition = new Vector2(
+                    cameraLeft,                             // Bord gauche visible de la caméra
+                    Random.Range(cameraBottom, cameraTop)  // Entre les limites haut/bas visibles de la caméra
+                );
                 break;
             case 3: // Bord droit
-                    // Générer une position aléatoire entre les limites du haut et du bas de la carte, mais fixer la position x au bord droit
-                spawnPosition = new Vector2(cameraPosition.x + mapWidth / 2, cameraPosition.y + Random.Range(-mapHeight / 2, mapHeight / 2));
+                spawnPosition = new Vector2(
+                    cameraRight,                            // Bord droit visible de la caméra
+                    Random.Range(cameraBottom, cameraTop)  // Entre les limites haut/bas visibles de la caméra
+                );
                 break;
+        }
+
+        // Si la position calculée est en dehors de la carte, la déplacer vers le bord opposé de la carte
+        if (spawnPosition.x < mapLeft)
+        {
+            spawnPosition.x = mapRight;  // Déplacer vers le bord droit
+        }
+        else if (spawnPosition.x > mapRight)
+        {
+            spawnPosition.x = mapLeft;   // Déplacer vers le bord gauche
+        }
+
+        if (spawnPosition.y < mapBottom)
+        {
+            spawnPosition.y = mapTop;    // Déplacer vers le bord supérieur
+        }
+        else if (spawnPosition.y > mapTop)
+        {
+            spawnPosition.y = mapBottom; // Déplacer vers le bord inférieur
         }
 
         // Retourner la position de spawn générée
