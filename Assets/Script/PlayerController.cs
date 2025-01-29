@@ -88,6 +88,6 @@ public class PlayerController : MonoBehaviour
     void Die()
     {
         isDead = true;
-        // appeler GameOver plus tard
+        GameManager.instance.GameOver();
     }
 }

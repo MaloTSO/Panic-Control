@@ -34,6 +34,8 @@ public class EnemyManager : MonoBehaviour
 
     private void Update()
     {
+        if(!WaveManager.instance.WaveRunning()) return;
+        
         currentTimeBetweenSpawns -= Time.deltaTime;
 
         if (currentTimeBetweenSpawns <= 0)
@@ -41,6 +43,8 @@ public class EnemyManager : MonoBehaviour
             SpawnEnemy();
             currentTimeBetweenSpawns = timeBetweenSpawns;
         }
+
+        
     }
 
     Vector2 RandomPosition()
