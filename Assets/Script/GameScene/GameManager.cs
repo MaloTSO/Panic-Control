@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject gameOverPanel;
     [SerializeField] Button restartButton;
     [SerializeField] TextMeshProUGUI pseudoText;
+    [SerializeField] Image heartRateBarBackground;
 
     private bool gameRunning;
     public static GameManager instance;
@@ -22,7 +23,9 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1;
         string pseudo = PlayerPrefs.GetString("PlayerPseudo");
+        heartRateBarBackground.gameObject.SetActive(true);
         if (!string.IsNullOrEmpty(pseudo))
         {
             pseudoText.text = pseudo;
@@ -42,6 +45,9 @@ public class GameManager : MonoBehaviour
     {
         gameRunning = false;
         gameOverPanel.SetActive(true);
+        heartRateBarBackground.gameObject.SetActive(false);
+        
+        Time.timeScale = 0;
     }
 
     public void StartGame()
@@ -51,6 +57,7 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene("GameScene");
     }
 

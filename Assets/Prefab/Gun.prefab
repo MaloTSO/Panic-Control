@@ -50,7 +50,7 @@ MonoBehaviour:
   muzzlePosition: {fileID: 8701821596419695703}
   projectilePrefab: {fileID: 8148448627891365710, guid: 4dd94cd1ad1ab914fb7626fc37e4b313, type: 3}
   fireDistance: 10
-  fireRate: 0.5
+  fireRate: 0.2
 --- !u!1 &4314036310570576360
 GameObject:
   m_ObjectHideFlags: 0

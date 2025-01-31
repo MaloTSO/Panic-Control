@@ -7,10 +7,13 @@ public class EnemyManager : MonoBehaviour
 
     [SerializeField] GameObject enemyPrefab;
     [SerializeField] GameObject chargerPrefab;
-    [SerializeField] float timeBetweenSpawns = 0.5f;
+    public float timeBetweenSpawns = 1f;
     float currentTimeBetweenSpawns;
     Transform enemiesParent;
+    private bool canSpawn = true;
+    private int zombieCount = 0;
     public static EnemyManager instance;
+
 
     private void Awake()
     {
@@ -22,6 +25,7 @@ public class EnemyManager : MonoBehaviour
 
     private void Start()
     {
+        canSpawn = true;
         GameObject enemiesObject = GameObject.Find("Enemies");
         if (enemiesObject != null)
         {
@@ -40,7 +44,7 @@ public class EnemyManager : MonoBehaviour
         
         currentTimeBetweenSpawns -= Time.deltaTime;
 
-        if (currentTimeBetweenSpawns <= 0)
+        if (currentTimeBetweenSpawns <= 0 && canSpawn)
         {
             SpawnEnemy();
             currentTimeBetweenSpawns = timeBetweenSpawns;
@@ -160,7 +164,7 @@ public class EnemyManager : MonoBehaviour
         return spawnPosition;
     }
 
-    void SpawnEnemy()
+    public void SpawnEnemy()
     {
         var roll = Random.Range(0, 100);
         var enemyType = roll < 90 ? enemyPrefab : chargerPrefab;
@@ -177,4 +181,28 @@ public class EnemyManager : MonoBehaviour
             Destroy(enemy.gameObject);
         }
     }
+
+    public void StopSpawning(){
+        canSpawn = false;
+    }
+
+    public void StartSpawning(){
+        canSpawn = true;
+    }
+
+    public void IncreaseZombieCount()
+    {
+        zombieCount++;
+    }
+
+    public void DecreaseZombieCount()
+    {
+        zombieCount = Mathf.Max(0, zombieCount - 1);
+    }
+
+        public int GetZombieCount()
+    {
+        return zombieCount;
+    }
+    
 }

@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     [Header("Charger")]
     [SerializeField] bool isCharger;
     [SerializeField] float distanceToCharge = 5f;
-    [SerializeField] float chargeSpeed = 12f;
+    [SerializeField] float chargeSpeed = 10f;
     [SerializeField] float prepareTime = 2f;
 
     bool isCharging = false;
@@ -24,11 +24,12 @@ public class Enemy : MonoBehaviour
     {
         currentHealth = maxHealth;
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        EnemyManager.instance.IncreaseZombieCount();
     }
 
     void Update()
     {
-        if(!WaveManager.instance.WaveRunning()) return; // Si la vague n'est pas en cours, on ne fait rien
+        // if(!WaveManager.instance.WaveRunning()) return; // Si la vague n'est pas en cours, on ne fait rien
 
         if(isPreparingCharge) return;
         
@@ -63,6 +64,7 @@ public class Enemy : MonoBehaviour
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
+            EnemyManager.instance.DecreaseZombieCount();
             Destroy(gameObject);
         }
     }
