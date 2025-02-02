@@ -11,9 +11,12 @@ public class EnemyManager : MonoBehaviour
     public float timeBetweenSpawns = 1f;
     float currentTimeBetweenSpawns;
     Transform enemiesParent;
-    private bool canSpawn = true;
+    private bool canSpawn = true; // pour le calibrage
+    private bool canSpawnWave = false; //pour les wave normale
     private int zombieCount = 0;
     public static EnemyManager instance;
+    private int chargerSpawnChance = 10;
+    private int bossSpawnChance = 2;
 
 
     private void Awake()
@@ -41,17 +44,20 @@ public class EnemyManager : MonoBehaviour
     private void Update()
     {
 
-        if(!WaveManager.instance.WaveRunning()) return;
-        
+        if (!WaveManager.instance.WaveRunning()) return;
+
         currentTimeBetweenSpawns -= Time.deltaTime;
 
         if (currentTimeBetweenSpawns <= 0 && canSpawn)
         {
+            SpawnBasicEnemy();
+            currentTimeBetweenSpawns = timeBetweenSpawns;
+        }
+        if (currentTimeBetweenSpawns <= 0 && canSpawnWave)
+        {
             SpawnEnemy();
             currentTimeBetweenSpawns = timeBetweenSpawns;
         }
-
-        
     }
 
     Vector2 RandomPosition()
@@ -96,7 +102,7 @@ public class EnemyManager : MonoBehaviour
         List<int> possibleEdges = new List<int> { 0, 1, 2, 3 };
 
         // Exclure les bords où la caméra est proche (en tenant compte d'une marge de sécurité)
-        float margin = 1.0f; 
+        float margin = 1.0f;
         if (cameraPosition.y + cameraHalfHeight - margin >= cameraTop) possibleEdges.Remove(0); // Trop proche du bord supérieur
         if (cameraPosition.y - cameraHalfHeight + margin <= cameraBottom) possibleEdges.Remove(1); // Trop proche du bord inférieur
         if (cameraPosition.x - cameraHalfWidth + margin <= cameraLeft) possibleEdges.Remove(2); // Trop proche du bord gauche
@@ -165,11 +171,24 @@ public class EnemyManager : MonoBehaviour
         return spawnPosition;
     }
 
+    public void SpawnBasicEnemy()
+    {
+        var e = Instantiate(enemyPrefab, RandomPosition(), Quaternion.identity);
+        e.transform.SetParent(enemiesParent);
+    }
+
     public void SpawnEnemy()
     {
-        var roll = Random.Range(0, 100);
-        var enemyType = roll < 90 ? enemyPrefab : chargerPrefab;
+        int roll = Random.Range(0, 100);
 
+        GameObject enemyType;
+
+        if (roll < bossSpawnChance)
+            enemyType = bossPrefab;
+        else if (roll < chargerSpawnChance + bossSpawnChance)
+            enemyType = chargerPrefab;
+        else
+            enemyType = enemyPrefab;
 
         var e = Instantiate(enemyType, RandomPosition(), Quaternion.identity);
         e.transform.SetParent(enemiesParent);
@@ -195,12 +214,37 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public void StopSpawning(){
+    public void StopSpawning()
+    {
         canSpawn = false;
     }
 
-    public void StartSpawning(){
+    public void StartSpawning()
+    {
         canSpawn = true;
+    }
+
+    public void StartSpawningWave()
+    {
+        canSpawnWave = true;
+        currentTimeBetweenSpawns = 0;
+    }
+
+    public void IncreaseDifficulty(int currentWave)
+    {
+        // Augmentation de la difficulté en fonction de la vague
+        float spawnRateMultiplier = 1f + (currentWave * 0.1f);
+        timeBetweenSpawns = Mathf.Max(0.5f, 1f / spawnRateMultiplier);
+
+        //plus la vague est haute, plus il y a de chargeurs et de boss
+        int baseChargerChance = 10;
+        int baseBossChance = 2;
+
+        chargerSpawnChance = Mathf.Min(50, baseChargerChance + currentWave * 2); // Jusqu'à 50%
+        bossSpawnChance = Mathf.Min(15, baseBossChance + currentWave);           // Jusqu'à 15%
+
+        Debug.Log($"Wave {currentWave}: Difficulty increased!");
+        Debug.Log($"Spawn rate: {1f / timeBetweenSpawns}s | Charger chance: {chargerSpawnChance}% | Boss chance: {bossSpawnChance}%");
     }
 
     public void IncreaseZombieCount()
@@ -217,5 +261,5 @@ public class EnemyManager : MonoBehaviour
     {
         return zombieCount;
     }
-    
+
 }

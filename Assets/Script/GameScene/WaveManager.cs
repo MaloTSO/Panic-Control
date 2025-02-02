@@ -16,8 +16,8 @@ public class WaveManager : MonoBehaviour
     int currentWaveTime;
     public bool hardWave = false;
     private int zombieCount;
-    private bool isCalibrated = false;
-    private int calibrationWave = 1;
+    public bool isCalibrated = false;
+    private int calibrationWave = 0;
 
 
     private void Awake()
@@ -32,6 +32,12 @@ public class WaveManager : MonoBehaviour
     {
         HRM = FindObjectOfType<heartRateManager>();
 
+        if (PlayerPrefs.GetInt("IsCalibrated", 0) == 1)
+        {
+            isCalibrated = true;
+            calibrationWave = 4;
+        }
+
         StartNewWave();
 
     }
@@ -39,13 +45,17 @@ public class WaveManager : MonoBehaviour
     private void Update()
     {
         zombieCount = EnemyManager.instance.GetZombieCount();
-        //for testing
+
         if (zombieCount == 0 && currentWaveTime == 0)
         {
             zombieCountText.color = Color.green;
             zombieCountText.text = "Press Space to start next wave";
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                if (calibrationWave == 3)
+                {
+                    isCalibrated = true;
+                }
                 StartNewWave();
             }
         }
@@ -58,33 +68,39 @@ public class WaveManager : MonoBehaviour
 
     private void StartNewWave()
     {
+        EnemyManager.instance.IncreaseDifficulty(currentWave);
+        StopAllCoroutines();
         currentWaveTime = 30;
-        // if (!isCalibrated && calibrationWave == 1)
-        // {
-        //     Calibration(calibrationWave);
-        //     waveText.text = "Easy calibration Waves";
-        // }
-        // else if (!isCalibrated && calibrationWave == 2)
-        // {
-        //     Calibration(calibrationWave);
-        //     waveText.text = "Medium calibration Waves";
-        // }
-        // else if (!isCalibrated && calibrationWave == 3)
-        // {
-        //     Calibration(calibrationWave);
-        //     waveText.text = "Hard calibration Waves";
-        // }
-        // else
-        // {
-            EnemyManager.instance.StartSpawning();
-            StopAllCoroutines();
+        calibrationWave++;
+        waveRunning = true;
+        if (!isCalibrated && calibrationWave == 1)
+        {
+            Calibration(calibrationWave);
+            waveText.text = "Easy calibration Waves";
+            waveText.color = Color.green;
+        }
+        else if (!isCalibrated && calibrationWave == 2)
+        {
+            Calibration(calibrationWave);
+            waveText.text = "Medium calibration Waves";
+            waveText.color = Color.yellow;
+        }
+        else if (!isCalibrated && calibrationWave == 3)
+        {
+            Calibration(calibrationWave);
+            waveText.text = "Hard calibration Waves";
+            waveText.color = Color.red;
+        }
+        else
+        {
+            EnemyManager.instance.StartSpawningWave();
+            waveText.color = Color.white;
             timeText.color = Color.white;
             currentWave++;
-            waveRunning = true;
             currentWaveTime = 30;
             waveText.text = "Wave " + currentWave;
             StartCoroutine(WaveTimer());
-        // }
+        }
 
     }
 
@@ -114,12 +130,8 @@ public class WaveManager : MonoBehaviour
         timeText.text = currentWaveTime.ToString();
         timeText.color = Color.red;
         waveText.text = "Kill the remaining zombies";
+        waveText.color = Color.white;
         HRM.EndStressReached();
-    }
-
-    public void IncreaseDifficulty()
-    {
-        //pour augmenter la difficulté au fil des wave
     }
 
     public void WaveStress()
@@ -152,34 +164,21 @@ public class WaveManager : MonoBehaviour
         {
             Debug.Log("Calibration wave 3");
             HardWave();
-            isCalibrated = true;
+
+            // calibration terminée
+            PlayerPrefs.SetInt("IsCalibrated", 1);
+            PlayerPrefs.Save();
         }
-        calibrationWave++;
     }
 
     private void SpawnEnemyDelayed()
     {
-        EnemyManager.instance.SpawnEnemy();
-    }
-
-    private void SpawnChargerDelayed()
-    {
-        EnemyManager.instance.SpawnCharger();
-    }
-
-    private void SpawnBossDelayed()
-    {
-        EnemyManager.instance.SpawnBoss();
+        EnemyManager.instance.SpawnBasicEnemy();
     }
 
     public void EasyWave()
     {
         EnemyManager.instance.StartSpawning();
-        for (int i = 0; i < 5; i++)
-        {
-            EnemyManager.instance.SpawnEnemy();
-            Invoke("SpawnChargerDelayed", 3f * (i + 1));
-        }
     }
 
     public void MediumWave()
@@ -187,38 +186,46 @@ public class WaveManager : MonoBehaviour
         EnemyManager.instance.StartSpawning();
         for (int i = 0; i < 10; i++)
         {
-            EnemyManager.instance.SpawnEnemy();
+            EnemyManager.instance.SpawnBasicEnemy();
             Invoke("SpawnEnemyDelayed", 2f * (i + 1));
         }
-        Invoke("SpawnBossDelayed", 20f);
     }
 
     public void HardWave()
     {
         EnemyManager.instance.StartSpawning();
-        StartCoroutine(SpawnHardWave());
+        StartCoroutine(SpawnEnemies());
+        StartCoroutine(SpawnChargers());
+        StartCoroutine(SpawnBosses());
     }
 
-    private IEnumerator SpawnHardWave()
+    private IEnumerator SpawnEnemies()
     {
         for (int i = 0; i < 10; i++)
         {
             EnemyManager.instance.SpawnEnemy();
             yield return null;
         }
+    }
 
-
+    private IEnumerator SpawnChargers()
+    {
         for (int i = 0; i < 5; i++)
         {
             yield return new WaitForSeconds(5f);
             EnemyManager.instance.SpawnCharger();
         }
+    }
 
+    private IEnumerator SpawnBosses()
+    {
         for (int i = 0; i < 2; i++)
         {
             yield return new WaitForSeconds(20f);
             EnemyManager.instance.SpawnBoss();
         }
     }
+
+    public int GetcalibrationWave() => calibrationWave;
 
 }

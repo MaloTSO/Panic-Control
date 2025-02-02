@@ -6,21 +6,24 @@ using TMPro;
 public class MainMenuController : MonoBehaviour
 {
     [Header("UI Elements")]
-    public Button tutorialButton;
+    public Button resetCalibrationButton;
     public Button newGameButton;
     public Button quitButton;
     public TMP_InputField pseudoInputField;
 
     private void Start()
     {
-        tutorialButton.onClick.AddListener(OnTutorialButtonClicked);
+        resetCalibrationButton.onClick.AddListener(ResetCalibration);
         newGameButton.onClick.AddListener(OnNewGameButtonClicked);
         quitButton.onClick.AddListener(OnQuitButtonClicked);
     }
 
-    public void OnTutorialButtonClicked()
+    public void ResetCalibration()
     {
-        SceneManager.LoadScene("TutorialScene");
+        PlayerPrefs.DeleteKey("IsCalibrated");
+        PlayerPrefs.DeleteKey("PlayerPseudo");
+        PlayerPrefs.Save();
+        Debug.Log("Calibration reset");
     }
 
     public void OnNewGameButtonClicked()

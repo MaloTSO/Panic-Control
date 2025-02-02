@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour
     {
         //si on touche l'ennemi, on prend des dégâts de la valeur de l'argument passé à la méthode Hit
         Enemy enemy = collision.gameObject.GetComponent<Enemy>();
-        if (enemy != null)
+        if (enemy != null && WaveManager.instance.GetcalibrationWave()>3)
         {
             Hit(20);
         }
@@ -77,6 +77,7 @@ public class PlayerController : MonoBehaviour
         currentHealth -= damage;
         healthText.text = "Health : " + Mathf.Clamp(currentHealth, 0, maxHealth).ToString();
         //si le joueur n'a plus de points de vie, on appelle la méthode Die
+        
         if(currentHealth <= 0)
         {
             Die();
