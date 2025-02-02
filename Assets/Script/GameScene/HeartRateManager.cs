@@ -1,9 +1,12 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class heartRateManager : MonoBehaviour
 {
+    [SerializeField] TextMeshProUGUI bpmText;
+    [SerializeField] TextMeshProUGUI stressReachedText;
     public Image heartRateBar;
     private float bpmFactor;
     private float bpmDiff;
@@ -15,6 +18,7 @@ public class heartRateManager : MonoBehaviour
     private float HRV_1min;
     private float HR_10s;
     float HRV_10s;
+    float timpBpm;
 
     void Start()
     {
@@ -23,6 +27,7 @@ public class heartRateManager : MonoBehaviour
         bpmFactor = 0.01f;
         currentFillAmount = 0f;
         Debug.Log("currentFillAmount : " + currentFillAmount);
+        timpBpm = Time.time; 
     }
 
     void Update()
@@ -33,9 +38,14 @@ public class heartRateManager : MonoBehaviour
             
             if(!WaveManager.instance.WaveRunning()) return;
 
+            bpmText.text = HR_10s.ToString() + " BPM";
             HR_1min = 80;
             HR_10s = 90;
-            // HR_10s = UnityEngine.Random.Range(70, 90);
+            if(Time.time - timpBpm > 10f)
+            {
+                // HR_10s = UnityEngine.Random.Range(70, 90);
+                timpBpm = Time.time;
+            }
 
             // HR_1min = UDPListener.instance.getHR_1min();
             // HRV_1min = UDPListener.instance.getHRV_1min();
@@ -75,7 +85,7 @@ public class heartRateManager : MonoBehaviour
 
                 currentFillAmount = 1f;
                 StressReached();
-                WaveManager.instance.HardWave();
+                WaveManager.instance.WaveStress();
                 lastHardWaveTime = Time.time;
             }
 
@@ -94,6 +104,7 @@ public class heartRateManager : MonoBehaviour
         // Si le joueur atteint un stress maximum, on affiche une barre rouge
         heartRateBar.color = Color.red;
         hardWave = true;
+        stressReachedText.gameObject.SetActive(true);
         Invoke("EndStressReached", 10f);
     }
 
@@ -101,7 +112,7 @@ public class heartRateManager : MonoBehaviour
     {
         currentFillAmount = 0f;
         heartRateBar.color = Color.white;
-
+        stressReachedText.gameObject.SetActive(false);
         hardWave = false;
     }
 

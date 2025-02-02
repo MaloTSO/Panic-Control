@@ -7,6 +7,7 @@ public class EnemyManager : MonoBehaviour
 
     [SerializeField] GameObject enemyPrefab;
     [SerializeField] GameObject chargerPrefab;
+    [SerializeField] GameObject bossPrefab;
     public float timeBetweenSpawns = 1f;
     float currentTimeBetweenSpawns;
     Transform enemiesParent;
@@ -174,6 +175,18 @@ public class EnemyManager : MonoBehaviour
         e.transform.SetParent(enemiesParent);
     }
 
+    public void SpawnBoss()
+    {
+        var e = Instantiate(bossPrefab, RandomPosition(), Quaternion.identity);
+        e.transform.SetParent(enemiesParent);
+    }
+
+    public void SpawnCharger()
+    {
+        var e = Instantiate(chargerPrefab, RandomPosition(), Quaternion.identity);
+        e.transform.SetParent(enemiesParent);
+    }
+
     public void DestroyAllEnemies()
     {
         foreach (Transform enemy in enemiesParent)
@@ -200,7 +213,7 @@ public class EnemyManager : MonoBehaviour
         zombieCount = Mathf.Max(0, zombieCount - 1);
     }
 
-        public int GetZombieCount()
+    public int GetZombieCount()
     {
         return zombieCount;
     }

@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 5a1fc735e9981e84b9b17e061bebd172, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 10fee9c52bc304f499dcb5cbd13f8c79, type: 3}
   m_Color: {r: 0.98490566, g: 0.21370581, b: 0.21370581, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -102,9 +102,13 @@ MonoBehaviour:
   maxHealth: 150
   moveSpeed: 3
   isCharger: 1
+  healthCharger: 100
   distanceToCharge: 5
   chargeSpeed: 12
   prepareTime: 2
+  isBoss: 0
+  healthBoss: 1000
+  moveSpeedBoss: 2
 --- !u!50 &7552125333700587603
 Rigidbody2D:
   serializedVersion: 4

@@ -10,7 +10,7 @@ public class Gun : MonoBehaviour
     [Header("Config")]
 
     [SerializeField] float fireDistance = 10;
-    [SerializeField] float fireRate = 0.2f;
+    [SerializeField] float fireRate = 0.1f;
 
     /*********************************************************************************************/
 
