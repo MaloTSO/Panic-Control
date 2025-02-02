@@ -12,10 +12,9 @@ public class UDPListener : MonoBehaviour
     public int listenPort = 5005;
     private bool isRunning = true;
     
-    public float HR_1min { get; private set; }
-    public float HRV_1min { get; private set; }
-    public float HR_10s { get; private set; }
-    public float HRV_10s { get; private set; }
+    public float stress_level_100b { get; private set; }
+    public float stress_level_15b { get; private set; }
+    public float hr { get; private set; }
     
 
     public static UDPListener instance; // Singleton instance
@@ -53,14 +52,13 @@ public class UDPListener : MonoBehaviour
                 string receivedText = Encoding.UTF8.GetString(receivedBytes).Trim();
                 
                 string[] values = receivedText.Split(',');
-                if (values.Length == 4)
+                if (values.Length == 3)
                 {
-                    HR_1min = float.Parse(values[0], CultureInfo.InvariantCulture);
-                    HRV_1min = float.Parse(values[1], CultureInfo.InvariantCulture);
-                    HR_10s = float.Parse(values[2], CultureInfo.InvariantCulture);
-                    HRV_10s = float.Parse(values[3], CultureInfo.InvariantCulture);
+                    stress_level_100b = float.Parse(values[0], CultureInfo.InvariantCulture);
+                    stress_level_15b = float.Parse(values[1], CultureInfo.InvariantCulture);
+                    hr = float.Parse(values[2], CultureInfo.InvariantCulture);
                     
-                    Debug.Log($"HR(1min): {HR_1min} BPM, HRV(1min): {HRV_1min} ms, HR(10s): {HR_10s} BPM, HRV(10s): {HRV_10s} ms");
+                    Debug.Log($"Stress Level 100B: {stress_level_100b:.2f}, Stress Level 15B: {stress_level_15b:.2f}, HR: {hr:.2f}");
                 }
                 else
                 {
@@ -81,20 +79,16 @@ public class UDPListener : MonoBehaviour
         udpThread?.Abort();
     }
 
-    public float getHR_1min()
+    public float getstress_level_100b()
     {
-        return HR_1min;
+        return stress_level_100b;
     }
-    public float getHRV_1min()
+    public float getstress_level_15b()
     {
-        return HRV_1min;
+        return stress_level_15b;
     }
-    public float getHR_10s()
+    public float gethr()
     {
-        return HR_10s;
-    }
-    public float getHRV_10s()
-    {
-        return HRV_10s;
+        return hr;
     }
 }

@@ -8,26 +8,25 @@ public class heartRateManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI bpmText;
     [SerializeField] TextMeshProUGUI stressReachedText;
     public Image heartRateBar;
-    private float bpmFactor;
-    private float bpmDiff;
+    private float stress_factor;
+    private float stress_diff;
     private float currentFillAmount;
     private float lastHardWaveTime = 0f;
     private float hardWaveCooldown = 10f;
     private bool hardWave = false;
-    private float HR_1min;
-    private float HRV_1min;
-    private float HR_10s;
-    float HRV_10s;
-    float timpBpm;
+    private float stress_100b;
+    private float stress_15b;
+    private float hr;
+    private float stress_ref;
 
     void Start()
     {
         Application.targetFrameRate = 60;
-        bpmDiff = 0f;
-        bpmFactor = 0.01f;
+        stress_diff = 0f;
+        stress_factor = 0.01f;
         currentFillAmount = 0f;
+        stress_ref = 1.5f;
         Debug.Log("currentFillAmount : " + currentFillAmount);
-        timpBpm = Time.time; 
     }
 
     void Update()
@@ -38,45 +37,38 @@ public class heartRateManager : MonoBehaviour
             
             if(!WaveManager.instance.WaveRunning()) return;
 
-            bpmText.text = HR_10s.ToString() + " BPM";
-            HR_1min = 80;
-            HR_10s = 90;
-            if(Time.time - timpBpm > 10f)
-            {
-                // HR_10s = UnityEngine.Random.Range(70, 90);
-                timpBpm = Time.time;
-            }
+            bpmText.text = hr.ToString() + " BPM";
+            stress_100b = 1.5f;
+            stress_15b = 2.5f;
+            
+            stress_100b = UDPListener.instance.stress_level_100b;
+            stress_15b = UDPListener.instance.stress_level_15b;
+            hr = UDPListener.instance.hr;
 
-            // HR_1min = UDPListener.instance.getHR_1min();
-            // HRV_1min = UDPListener.instance.getHRV_1min();
-            // HR_10s = UDPListener.instance.getHR_10s();
-            // HRV_10s = UDPListener.instance.getHRV_10s();
-
+            // Debug.Log("stress_100b : " + stress_100b);
+            // Debug.Log("stress_15b : " + stress_15b);
+            // Debug.Log("hr : " + hr);
             // Debug.Log("Current FPS: " + (1.0f / Time.deltaTime));
-            // Debug.Log("HR 1min: " + HR_1min);
-            // Debug.Log("HRV 1min: " + HRV_1min);
-            // Debug.Log("HR 10s: " + HR_10s);
-            // Debug.Log("HRV 10s: " + HRV_10s);
 
             
 
-            bpmDiff = Math.Max(0, HR_10s - HR_1min);
+            stress_diff = Math.Max(stress_100b - stress_15b, 0f);
 
-            if (HR_1min > 0)
+            if (stress_100b > 0)
             {
-                bpmFactor = Math.Min(bpmDiff / (2f * HR_1min), 1f)/(1.0f / Time.deltaTime); 
+                stress_factor = Math.Min(stress_diff / (2f * stress_100b), 1f)/(1.0f / Time.deltaTime); 
             }
             else
             {
-                bpmFactor = 0f; // Évite NaN en cas de HR_1min = 0
+                stress_factor = 0f; // Évite NaN en cas de stress_100b = 0
             }
 
-            // Debug.Log("bpmDiff : " + bpmDiff);
-            // Debug.Log("bpmFactor : " + bpmFactor);
+            // Debug.Log("stress_diff : " + stress_diff);
+            // Debug.Log("stress_factor : " + stress_factor);
 
             if (!hardWave)
             {
-                currentFillAmount += bpmFactor;
+                currentFillAmount += stress_factor;
                 // Debug.Log("currentFillAmount : " + currentFillAmount);
             }
 
