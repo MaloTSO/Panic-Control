@@ -25,7 +25,7 @@ public class heartRateManager : MonoBehaviour
         stress_diff = 0f;
         stress_factor = 0.01f;
         currentFillAmount = 0f;
-        stress_ref = 1.5f;
+        stress_ref = 1f;
         Debug.Log("currentFillAmount : " + currentFillAmount);
     }
 
@@ -34,37 +34,39 @@ public class heartRateManager : MonoBehaviour
 
         if (UDPListener.instance != null)
         {
-            
+            hr = 70;
+            // hr = UDPListener.instance.hr;
+            bpmText.text = hr.ToString() + " BPM";
             if(!WaveManager.instance.WaveRunning()) return;
 
-            bpmText.text = hr.ToString() + " BPM";
-            stress_100b = 1.5f;
-            stress_15b = 2.5f;
+            stress_100b = 1f;
+            stress_15b = 1.5f;
             
-            stress_100b = UDPListener.instance.stress_level_100b;
-            stress_15b = UDPListener.instance.stress_level_15b;
-            hr = UDPListener.instance.hr;
+            // stress_100b = UDPListener.instance.stress_level_100b;
+            // stress_15b = UDPListener.instance.stress_level_15b;
 
-            // Debug.Log("stress_100b : " + stress_100b);
-            // Debug.Log("stress_15b : " + stress_15b);
-            // Debug.Log("hr : " + hr);
+            Debug.Log("stress_100b : " + stress_100b);
+            Debug.Log("stress_15b : " + stress_15b);
+            Debug.Log("hr : " + hr);
             // Debug.Log("Current FPS: " + (1.0f / Time.deltaTime));
 
             
 
-            stress_diff = Math.Max(stress_100b - stress_15b, 0f);
+            float stress_diff_15b = Math.Max(stress_15b - stress_ref, 0f);
+            float stress_diff_100b = Math.Max(stress_100b - stress_100b, 0f);
 
             if (stress_100b > 0)
             {
-                stress_factor = Math.Min(stress_diff / (2f * stress_100b), 1f)/(1.0f / Time.deltaTime); 
+                stress_factor = Math.Min((0.7f*stress_diff_15b + 0.3f*stress_diff_100b) / (2f * stress_ref), 1f)/((1.0f / Time.deltaTime)*2.5f); 
             }
             else
             {
                 stress_factor = 0f; // Évite NaN en cas de stress_100b = 0
             }
 
-            // Debug.Log("stress_diff : " + stress_diff);
-            // Debug.Log("stress_factor : " + stress_factor);
+            Debug.Log("stress_diff_15b : " + stress_diff_15b);
+            Debug.Log("stress_diff_100b : " + stress_diff_100b);
+            Debug.Log("stress_factor : " + stress_factor);
 
             if (!hardWave)
             {
