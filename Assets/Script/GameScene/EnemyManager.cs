@@ -14,7 +14,7 @@ public class EnemyManager : MonoBehaviour
     private bool canSpawn = true; // pour le calibrage
     private bool canSpawnWave = false; //pour les wave normale
     private int zombieCount = 0;
-    public static EnemyManager instance;
+    public static EnemyManager instance; // Singleton
     private int chargerSpawnChance = 10;
     private int bossSpawnChance = 2;
 
@@ -171,13 +171,13 @@ public class EnemyManager : MonoBehaviour
         return spawnPosition;
     }
 
-    public void SpawnBasicEnemy()
+    public void SpawnBasicEnemy() // pour le calibrage et faire spawn des ennemis de base pour easy et medium
     {
         var e = Instantiate(enemyPrefab, RandomPosition(), Quaternion.identity);
         e.transform.SetParent(enemiesParent);
     }
 
-    public void SpawnEnemy()
+    public void SpawnEnemy() // pour les waves normales
     {
         int roll = Random.Range(0, 100);
 

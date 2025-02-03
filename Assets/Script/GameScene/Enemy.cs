@@ -48,7 +48,6 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        // if(!WaveManager.instance.WaveRunning()) return; // Si la vague n'est pas en cours, on ne fait rien
 
         if(isPreparingCharge) return;
         
@@ -63,7 +62,7 @@ public class Enemy : MonoBehaviour
 
             if (isBoss)
             {
-                transform.localScale = new Vector2(playerToTheRight ? 1f : 1f, 1f);
+                transform.localScale = new Vector2(playerToTheRight ? 1f : -1f, 1f);
             }
             else{
                 transform.localScale = new Vector2(playerToTheRight ? 0.3f : -0.3f, 0.3f);

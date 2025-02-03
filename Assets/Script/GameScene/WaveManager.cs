@@ -9,7 +9,7 @@ public class WaveManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI zombieCountText;
 
     private heartRateManager HRM;
-    public static WaveManager instance;
+    public static WaveManager instance; // Singleton 
 
     int currentWave = 0;
     bool waveRunning = true;

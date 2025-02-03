@@ -60,8 +60,6 @@ public class heartRateManager : MonoBehaviour
 
             heartRateBar.fillAmount = currentFillAmount;
 
-            Debug.Log("currentFillAmount : " + currentFillAmount);
-
             if (!WaveManager.instance.WaveRunning()) return;
 
             // stress_100b = UDPListener.instance.stress_level_100b;
@@ -86,18 +84,18 @@ public class heartRateManager : MonoBehaviour
                 {
                     hardWaveCalibration.Add(stress_15b);
                 }
-                foreach (float value in easyWaveCalibration)
-                {
-                    Debug.Log("easyWaveCalibration : " + value);
-                }
-                foreach (float value in mediumWaveCalibration)
-                {
-                    Debug.Log("mediumWaveCalibration : " + value);
-                }
-                foreach (float value in hardWaveCalibration)
-                {
-                    Debug.Log("hardWaveCalibration : " + value);
-                }
+                // foreach (float value in easyWaveCalibration)
+                // {
+                //     Debug.Log("easyWaveCalibration : " + value);
+                // }
+                // foreach (float value in mediumWaveCalibration)
+                // {
+                //     Debug.Log("mediumWaveCalibration : " + value);
+                // }
+                // foreach (float value in hardWaveCalibration)
+                // {
+                //     Debug.Log("hardWaveCalibration : " + value);
+                // }
                 updateTime = 0f;
 
             }
@@ -105,11 +103,6 @@ public class heartRateManager : MonoBehaviour
             else if (WaveManager.instance.isCalibrated)
             {
                 
-                // Debug.Log("stress_100b : " + stress_100b);
-                // Debug.Log("stress_15b : " + stress_15b);
-                // Debug.Log("hr : " + hr);
-                // Debug.Log("Current FPS: " + (1.0f / Time.deltaTime));
-
                 float stress_diff_15b = Math.Max(stress_15b - stress_ref, 0f);
                 float stress_diff_100b = Math.Max(stress_100b - stress_ref, 0f);
 
@@ -122,9 +115,9 @@ public class heartRateManager : MonoBehaviour
                     stress_factor = 0f; // Évite NaN en cas de stress_100b = 0
                 }
 
-                Debug.Log("stress_diff_15b : " + stress_diff_15b);
-                Debug.Log("stress_diff_100b : " + stress_diff_100b);
-                Debug.Log("stress_factor : " + stress_factor);
+                // Debug.Log("stress_diff_15b : " + stress_diff_15b);
+                // Debug.Log("stress_diff_100b : " + stress_diff_100b);
+                // Debug.Log("stress_factor : " + stress_factor);
 
                 if (!hardWave)
                 {
