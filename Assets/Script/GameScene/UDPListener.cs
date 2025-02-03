@@ -58,7 +58,7 @@ public class UDPListener : MonoBehaviour
                     stress_level_15b = float.Parse(values[1], CultureInfo.InvariantCulture);
                     hr = float.Parse(values[2], CultureInfo.InvariantCulture);
                     
-                    Debug.Log($"Stress Level 100B: {stress_level_100b:.2f}, Stress Level 15B: {stress_level_15b:.2f}, HR: {hr:.2f}");
+                    // Debug.Log($"Stress Level 100B: {stress_level_100b:.2f}, Stress Level 15B: {stress_level_15b:.2f}, HR: {hr:.2f}");
                 }
                 else
                 {
