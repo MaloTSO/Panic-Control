@@ -68,7 +68,6 @@ public class WaveManager : MonoBehaviour
 
     private void StartNewWave()
     {
-        EnemyManager.instance.IncreaseDifficulty(currentWave);
         StopAllCoroutines();
         currentWaveTime = 30;
         calibrationWave++;
@@ -76,23 +75,24 @@ public class WaveManager : MonoBehaviour
         if (!isCalibrated && calibrationWave == 1)
         {
             Calibration(calibrationWave);
-            waveText.text = "Easy calibration Waves";
+            waveText.text = "Easy calibration Wave";
             waveText.color = Color.green;
         }
         else if (!isCalibrated && calibrationWave == 2)
         {
             Calibration(calibrationWave);
-            waveText.text = "Medium calibration Waves";
+            waveText.text = "Medium calibration Wave";
             waveText.color = Color.yellow;
         }
         else if (!isCalibrated && calibrationWave == 3)
         {
             Calibration(calibrationWave);
-            waveText.text = "Hard calibration Waves";
+            waveText.text = "Hard calibration Wave";
             waveText.color = Color.red;
         }
         else
         {
+            EnemyManager.instance.IncreaseDifficulty(currentWave);
             EnemyManager.instance.StartSpawningWave();
             waveText.color = Color.white;
             timeText.color = Color.white;

@@ -28,6 +28,8 @@ public class MainMenuController : MonoBehaviour
 
     public void OnNewGameButtonClicked()
     {
+        PlayerPrefs.DeleteKey("IsCalibrated");
+        PlayerPrefs.Save();
         SceneManager.LoadScene("GameScene");
     }
 

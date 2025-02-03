@@ -58,6 +58,8 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1;
+        PlayerPrefs.DeleteKey("IsCalibrated");
+        PlayerPrefs.Save();
         SceneManager.LoadScene("GameScene");
     }
 

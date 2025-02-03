@@ -104,7 +104,7 @@ public class heartRateManager : MonoBehaviour
 
             else if (WaveManager.instance.isCalibrated)
             {
-
+                
                 // Debug.Log("stress_100b : " + stress_100b);
                 // Debug.Log("stress_15b : " + stress_15b);
                 // Debug.Log("hr : " + hr);
