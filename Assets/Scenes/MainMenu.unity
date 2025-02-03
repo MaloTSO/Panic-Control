@@ -1472,7 +1472,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a328adedace2a64bb7a89110e1e1c4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resetCalibrationButton: {fileID: 0}
+  resetCalibrationButton: {fileID: 1328072839}
   newGameButton: {fileID: 2025885788}
   quitButton: {fileID: 1496867825}
   pseudoInputField: {fileID: 1044428727}
