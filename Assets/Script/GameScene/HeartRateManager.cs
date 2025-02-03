@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Linq;
 
 public class heartRateManager : MonoBehaviour
 {
@@ -10,7 +11,6 @@ public class heartRateManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI stressReachedText;
     [SerializeField] Image heartRateBar;
     private float stress_factor;
-    private float stress_diff;
     private float currentFillAmount;
     private float lastHardWaveTime = 0f;
     private float hardWaveCooldown = 10f;
@@ -31,7 +31,6 @@ public class heartRateManager : MonoBehaviour
     void Start()
     {
         Application.targetFrameRate = 60;
-        stress_diff = 0f;
         stress_factor = 0.01f;
         currentFillAmount = 0f;
         heartRateBar.fillAmount = currentFillAmount;
@@ -45,10 +44,10 @@ public class heartRateManager : MonoBehaviour
         updateTime += Time.deltaTime;
         if (UDPListener.instance != null)
         {
-            // hr = UDPListener.instance.hr;
+            hr = UDPListener.instance.hr;
             if (timetest > 1f)
             {
-                hr = UnityEngine.Random.Range(50, 200);
+                // hr = UnityEngine.Random.Range(50, 200);
                 bpmText.text = hr.ToString() + " BPM";
                 // Normalisation de la fréquence cardiaque entre 50 et 200 BPM
                 float normalizedBPM = Mathf.InverseLerp(50f, 200f, hr);
@@ -62,14 +61,15 @@ public class heartRateManager : MonoBehaviour
 
             if (!WaveManager.instance.WaveRunning()) return;
 
-            // stress_100b = UDPListener.instance.stress_level_100b;
-            // stress_15b = UDPListener.instance.stress_level_15b;
+            stress_100b = UDPListener.instance.stress_level_100b;
+            stress_15b = UDPListener.instance.stress_level_15b;
 
             // stress_100b = 1f;
             // stress_15b = 1.5f;
 
-            stress_100b = UnityEngine.Random.Range(0.5f, 3f);
-            stress_15b = UnityEngine.Random.Range(0.5f, 3f);
+            // stress_100b = UnityEngine.Random.Range(0.5f, 3f);
+            // stress_15b = UnityEngine.Random.Range(0.5f, 3f);
+
             if (updateTime > 3f)
             {
                 if (WaveManager.instance.GetcalibrationWave() == 1)
@@ -105,6 +105,7 @@ public class heartRateManager : MonoBehaviour
                 
                 float stress_diff_15b = Math.Max(stress_15b - stress_ref, 0f);
                 float stress_diff_100b = Math.Max(stress_100b - stress_ref, 0f);
+                stress_ref = easyWaveCalibration.Average();
 
                 if (stress_100b > 0)
                 {
@@ -118,6 +119,7 @@ public class heartRateManager : MonoBehaviour
                 // Debug.Log("stress_diff_15b : " + stress_diff_15b);
                 // Debug.Log("stress_diff_100b : " + stress_diff_100b);
                 // Debug.Log("stress_factor : " + stress_factor);
+                // Debug.Log("stress_ref : " + stress_ref);
 
                 if (!hardWave)
                 {
